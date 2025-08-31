@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./evote.db"
+}
+
+model Owner {
+  id        Int    @id @default(autoincrement())
+  name      String
+  email     String
+  tantiemes Float
+  token     Token?
+  // votes     Vote[]
+}
+
+model Token {
+  id      Int       @id @default(autoincrement())
+  token   String    @unique
+  usedAt  DateTime?
+  owner   Owner     @relation(fields: [ownerId], references: [id])
+  ownerId Int       @unique
+  Vote    Vote[]
+}
+
+model Resolution {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  votes       Vote[]
+}
+
+model Vote {
+  id           Int        @id @default(autoincrement())
+  choice       String
+  weight       Float
+  token        Token      @relation(fields: [tokenId], references: [id])
+  tokenId      Int
+  resolution   Resolution @relation(fields: [resolutionId], references: [id])
+  resolutionId Int
+  createdAt    DateTime   @default(now())
+}
